@@ -10,11 +10,7 @@ project(PoddSDK LANGUAGES CXX)
 # The generated shared library will be named lib$(PACKAGE).so/dylib
 set(PACKAGE MollerPol)
 
-# Sources.
-# List all your source files here. They will be put into a shared library
-# that can be loaded from a script.
-# List only the implementation files (*.cxx). For every implementation file
-# there must be a corresponding header file (*.h).
+# 1. Sources (Pure implementation files only)
 set(src
   MollerPolCalorimeter.cxx
   MollerPolApparatus.cxx
@@ -23,7 +19,8 @@ set(src
   Scaler3820.cxx
   MollerPolScalerEvtHandler.cxx
   MollerPolHelicityDecoderBoard.cxx
-
+  MollerPolHelicityDecoder.cxx
+  HelicityDecoderModule.cxx
   #--------GEM content--------
   gem/MPDModule.cxx
   gem/MollerPolGEMData.cxx
@@ -31,22 +28,18 @@ set(src
   gem/MollerPolGEMManager.cxx
   gem/MollerPolGEMModule.cxx
   gem/MollerPolGEMTrackerBase.cxx
+  gem/MollerPolGEMTrackerBase.cxx
   gem/MollerPolGEMSpectrometerTracker.cxx
   gem/MollerPolGEMSpectrometer.cxx
   )
 
-# Headers.
-# Leave the following line untouched.
+# 2. Convert source names to headers safely (Bypasses MollerPolDict.h generation)
 string(REPLACE .cxx .h headers "${src}")
 
-# If you have any extra headers needed for building the ROOT dictionary,
-# add them here. Otherwise leave this line commented out.
-#list(APPEND headers UserClassHeader.h)
+# 3. Safe Injection: Add the generated dictionary to source tracking list AFTER headers are built
+list(APPEND src "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE}Dict.cxx")
 
-# If you have other headers NOT needed for the ROOT dictionary but needed for
-# the library, add them here as shown in the line commented out below.
 set(allheaders ${headers})
-#set(allheaders ${headers} StandaloneHeader1.h StandaloneHeader2.h)
 
 #------------------------------------------------------------------------------
 # Do not change anything below here unless you know what you are doing
@@ -63,11 +56,10 @@ endif()
 include(PoddCMakeEnv)
 
 set_diagnostic_flags(WALL WEXTRA)
-#report_build_info()
 
 #----------------------------------------------------------------------------
 # Library
-add_library(${PACKAGE} SHARED ${src} ${allheaders} ${PACKAGE}Dict.cxx)
+add_library(${PACKAGE} SHARED ${src} ${allheaders})
 
 target_compile_options(${PACKAGE} PRIVATE ${${PROJECT_NAME_UC}_DIAG_FLAGS_LIST})
 

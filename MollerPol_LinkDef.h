@@ -11,6 +11,8 @@
 #pragma link C++ class Decoder::Scaler9250+;
 #pragma link C++ class Decoder::ScalerTI+;
 #pragma link C++ class Decoder::Scaler3820+;
+#pragma link C++ class Decoder::HelicityDecoderModule+;
+#pragma link C++ class MollerPolHelicityDecoder+;
 
 #pragma link C++ class Decoder::MPDModule+;
 #pragma link C++ class MollerPolGEMTrackerBase+;
